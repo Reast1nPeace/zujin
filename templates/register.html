@@ -1,0 +1,65 @@
+﻿{% load staticfiles %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>注册</title>
+    <link href="{% static 'css/style.css' %}" type="text/css" rel="stylesheet"/>
+
+</head>
+<body class="member">
+
+<div class="w1185">
+    <div class="font-d"><a href="{% url 'users:index' %}" style="color: #e83426;font-size: 40px">{{ pt_order_obj.pt_name }}</a></div>
+    <div class="search">
+        	<form action="{% url 'users:bz_list' %}" class="form">
+        		<input type="text" placeholder="输入本站租赁标题关键字" id="keyword" name="keyword" class="txt"/>
+                <input type="submit" value="搜索" class="sub"/>
+            </form>
+        </div>
+    <div class="s_r">
+        	<dl>
+                <dd style="font-size: 16px">客服电话：<b style="color: #ea3c1f">{{ pt_order_obj.phone }}</b></dd>
+            </dl>
+        </div>
+    <div class="clear"></div>
+</div>
+
+<div class="reg">
+    <div class="w1185">
+        <div class="left">
+            <p><b>注册</b></p>
+            <form action="{% url 'users:user_register' %}" class="form" method="post">
+            {% csrf_token %}
+                <ul>
+                    <li><span><font>*</font> 账户名：</span><input type="text" class="txt" id="username" name="username"
+                                                               value="{{ username|default:'' }}" placeholder="请输入账户名"/>
+                    </li>
+                    <li><span><font>*</font> 邮箱：</span><input type="text" class="txt" id="email" name="email"
+                                                              value="{{ email|default:'' }}" placeholder="请输入您的邮箱地址"/>
+                    </li>
+                    <li><span><font>*</font> 请设置密码：</span><input type="password" id="password" class="txt" name="password"
+                                                                 value="{{ password|default:'' }}"
+                                                                 placeholder="请输入6-12位非空格密码"/></li>
+                <li><span> 邀请码(选填)：</span><input type="text" id="tryqm" class="txt" name="tryqm"
+                                                                 placeholder="请输入6位邀请码"/></li>
+                    <li>
+                        <div style="background: #fb8344;color:#fff !important;text-align: center;">
+                            {{ msg }}
+                            {% for key,err in user_register_form.errors.items %}
+                                {{ err }}
+                            {% endfor %}
+                        </div>
+                    </li>
+                    <li class="li02"><input type="submit" value="注册并登录" class="sub"/></li>
+                </ul>
+            </form>
+        </div>
+        <div class="right">我已经注册，马上<a href="{% url 'users:user_login' %}">登录</a></div>
+        <div class="clear"></div>
+    </div>
+</div>
+
+</body>
+</html>

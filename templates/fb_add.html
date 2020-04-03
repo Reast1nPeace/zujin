@@ -1,0 +1,118 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>发布租赁信息</title>
+    <link rel="stylesheet" href="{% static '/layui/css/layui.css' %}">
+</head>
+<body>
+<form style="display: flex; flex-direction: column;width:700px;" class="layui-form">
+    {% csrf_token %}
+    <div class="layui-form-item">
+
+        <label class="layui-form-label">标题</label>
+        <div class="layui-input-block">
+            <input type="text" id="title" lay-verify="title"
+                   autocomplete="off"
+                   placeholder="标题" class="layui-input">
+        </div>
+        <br>
+        <label class="layui-form-label">游戏名称</label>
+        <div class="layui-input-block">
+            <select name="interest" lay-filter="aihao" id="game_name">
+                <option value=""></option>
+                {% for zuhao_fl in zuhao_fl_list %}
+                    <option value="{{ zuhao_fl.name }}">{{ zuhao_fl.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <br>
+        <label class="layui-form-label">区域</label>
+        <div class="layui-input-block">
+            <input type="text" id="area" lay-verify="title"
+                   autocomplete="off"
+                   placeholder="区域" class="layui-input">
+        </div>
+        <br>
+        <label class="layui-form-label">服务器</label>
+        <div class="layui-input-block">
+            <input type="text" id="server" lay-verify="title"
+                   autocomplete="off"
+                   placeholder="服务器" class="layui-input">
+        </div>
+        <br>
+        <label class="layui-form-label">账号</label>
+        <div class="layui-input-block">
+            <input type="text" id="zh" lay-verify="title"
+                   autocomplete="off"
+                   placeholder="账号" class="layui-input">
+        </div>
+        <br>
+        <label class="layui-form-label">密码</label>
+        <div class="layui-input-block">
+            <input type="text" id="pwd" lay-verify="title"
+                   autocomplete="off"
+                   placeholder="密码" class="layui-input">
+        </div>
+        <br>
+
+        <label class="layui-form-label">租金(单位:元/小时)</label>
+        <div class="layui-input-block">
+            <input type="text" id="money" lay-verify="title"
+                   autocomplete="off"
+                   placeholder="租金" class="layui-input">
+        </div>
+    </div>
+    <div style="text-align: center;margin-top: 30px">
+        <button id="tj" class="layui-btn layui-btn-normal" style="width: 100px">提交发布</button>
+    </div>
+</form>
+</body>
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'layui/layui.all.js' %}"></script>
+
+<script>
+
+    $('#tj').click(function () {
+        var title = $('#title').val()
+        var game_name = $('#game_name').val()
+        var area = $('#area').val()
+        var server = $('#server').val()
+        var money = $('#money').val()
+        var zh = $('#zh').val()
+        var pwd = $('#pwd').val()
+        $.ajax({
+            async: false, //async. 默认是 true，即为异步方式，$.ajax执行后，会继续执行ajax后面的脚本，直到服务器端返回数据后，触发$.ajax里的success方法，这时候执行的是两个线程。
+            //async 设置为 false，则所有的请求均为同步请求，在没有返回值之前，同步请求将锁住浏览器，用户其它操作必须等待请求完成才可以执行。
+            url: "{% url 'users:fb_add' %}",
+            type: 'post',
+            data: {
+                title: title,
+                game_name: game_name,
+                area: area,
+                money: money,
+                server: server,
+                pwd: pwd,
+                zh: zh,
+                csrfmiddlewaretoken: $("[name='csrfmiddlewaretoken']").val(),
+            },
+            success: function (data) {
+                if (data.msg == 'ok') {
+                    alert('已提交发布申请，请等待管理员审核');
+                    var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                    parent.layer.close(index);
+                    parent.location.reload();
+                } else {
+                    alert(data.msg);
+                }
+            },
+        })
+
+
+        return false;
+
+    })
+
+</script>
+</html>

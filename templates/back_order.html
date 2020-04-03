@@ -1,0 +1,97 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>设置平台信息</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="{% static '/layui/css/layui.css' %}" media="all">
+    <link rel="stylesheet" href="{% static 'layuiadmin/style/admin.css' %}" media="all">
+</head>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">设置平台信息</div>
+                <div class="layui-card-body" pad15>
+
+                    <div class="layui-form" lay-filter="">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">平台名称</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="pt_name" id="pt_name" value="{{ pt_obj.pt_name }}" lay-verify="pt_name"
+                                       autocomplete="off" placeholder="平台名称" class="layui-input">
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">服务电话</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="phone" id="phone" value="{{ pt_obj.phone }}" lay-verify="phone"
+                                       autocomplete="off" placeholder="服务电话" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">后台公告</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="gg" id="gg" value="{{ pt_obj.gg }}" lay-verify="gg"
+                                       autocomplete="off" placeholder="后台公告" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button class="layui-btn" id="tj">确认修改</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% csrf_token %}
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'layui/layui.all.js' %}"></script>
+<script>
+    $('#tj').click(function () {
+        var pt_name = $('#pt_name').val();
+        var phone = $('#phone').val();
+        var gg = $('#gg').val();
+        $.ajax({
+            async: false, //同步请求，true为异步请求，默认为true
+            url: "{% url 'users:back_order' %}",
+            type: 'post',
+            data: {
+                pt_name: pt_name,
+                phone: phone,
+                gg: gg,
+                csrfmiddlewaretoken: $("[name='csrfmiddlewaretoken']").val(),
+            },
+            success: function (data) {
+                if (data.status == 'ok') {
+                    layer.alert(data.msg);
+
+
+                } else if (data.status == 'null') {
+                    layer.alert(data.msg);
+                }else {
+                    layer.tips(data.msg, '#'+data.status,{
+                        tips: 1  //向上
+                    });
+                }
+
+            }
+        })
+
+
+    })
+</script>
+</body>
+</html>

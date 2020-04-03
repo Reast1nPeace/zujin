@@ -1,0 +1,156 @@
+{% load staticfiles %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>账户租赁平台</title>
+<link href="{% static 'css/style.css' %}" type="text/css" rel="stylesheet" />
+    <link rel="stylesheet" href="{% static '/layui/css/layui.css' %}">
+<script src="{% static 'js/jquery-1.7.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'js/common.js' %}"  type="text/javascript"></script>
+</head>
+<body class="index">
+
+<div class="top">
+	<div class="w1200">
+        <div class="left">{% if request.user.is_authenticated %}您好 {{ request.user.username }}，欢迎光临{{ pt_order_obj.pt_name }}！<a href="{% url 'users:user_logout' %}">退出登录</a>{% else %}您好，欢迎光临{{ pt_order_obj.pt_name }}！<a href="{% url 'users:user_login' %}">[登录]</a> <a href="{% url 'users:user_register' %}">[注册]</a>{% endif %}</div>
+<div class="right"><a href="{% url 'users:yfkdd_list' %}">已付款订单</a><a href="{% url 'users:user_message' %}">我的消息</a>{% if request.user.is_superuser == 1 %}<a href="{% url 'users:back_index' %}">管理</a>{% endif %}</div>    </div>
+</div>
+
+<div class="head">
+	<div class="w1200">
+    	<div class="logo" style="text-align: center;font-size: 40px;"><a href="{% url 'users:index' %}" style="color: #e83426">{{ pt_order_obj.pt_name }}</a></div>
+        <div class="search">
+        	<form action="{% url 'users:bz_list' %}" class="form">
+        		<input type="text" placeholder="输入本站租赁标题关键字" id="keyword" name="keyword" class="txt"/>
+                <input type="submit" value="搜索" class="sub"/>
+            </form>
+        </div>
+        <div class="s_r">
+        	<dl>
+                <dd>客服电话：<b>{{ pt_order_obj.phone }}</b></dd>
+            </dl>
+        </div>
+        <div class="clear"></div>
+    </div>
+</div>
+
+<div class="menu">
+	<div class="w1200">
+    <div class="item" id="nav"><a href="#" style="width:204px;background: no-repeat 60px center;padding-left:30px">本站租赁分类</a>
+        	<div class="nav_son">
+            	<ul>
+                    {% for zuhao_fl in zuhao_fl_list %}
+                	<li class="li01"><a href="{% url 'users:bz_list' %}?game_name={{ zuhao_fl.name }}">{{ zuhao_fl.name }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div class="item"><a href="{% url 'users:index' %}"
+                             {% if a == 'index' %}style="background:no-repeat 60px center #e83426"{% endif %}>首页</a>
+        </div>
+        <div class="item"><a href="{% url 'users:bz_list' %}"
+                             {% if a == 'bz_list' %}style="background:no-repeat 60px center #e83426"{% endif %}>本站租赁</a>
+        </div>
+        <div class="item"><a href="{% url 'users:wz_list' %}"
+                             {% if a == 'wz_list' %}style="background:no-repeat 60px center #e83426"{% endif %}>外站租赁</a>
+        </div>
+        <div class="item"><a href="{% url 'users:cz' %}"
+                             {% if a == 'cz' %}style="background:no-repeat 60px center #e83426"{% endif %}>充值</a></div>
+        <div class="item"><a href="{% url 'users:fb_list' %}"
+                             {% if a == 'fb_list' %}style="background:no-repeat 60px center #e83426"{% endif %}>发布</a>
+        </div>
+        <div class="item"><a href="{% url 'users:userinfo' %}"
+                             {% if a == 'userinfo' %}style="background:no-repeat 60px center #e83426"{% endif %}>个人中心</a>
+        </div>
+
+    </div>
+</div>
+
+<div class="w1200">
+    <div class="payply">
+        <div class="pay_w"><img src="{% static 'images/ico13.jpg' %}"/><p>订单已提交成功，请您尽快完成付款！<br />应付款：<font>{{ sum_money }}元</font></p></div>
+        <dl>
+        	<dt><span>请选择您的支付方式</span></dt>
+            <dd>
+            	<div class="title"><input type="radio" value="" checked="checked"/>在线支付</div>
+        		<div class="card">
+                	<p>银行或第三方支付机构</p>
+                    <ul>
+                    	<li><input type="radio" value="" checked="checked" name="pay" id="zfb"/><label for="zfb"><img src="{% static 'images/ico15.jpg' %}"/></label></li>
+                        <li><input type="radio" value="" name="pay" id="gs"/><label for="gs"><img src="{% static 'images/ico14.jpg' %}"/></label></li>
+                        <li><input type="radio" value="" name="pay" id="wx"/><label for="wx"><img src="{% static 'images/ico16.jpg' %}"/></label></li>
+                        <li><input type="radio" value="" name="pay" id="ny"/><label for="ny"><img src="{% static 'images/ico17.jpg' %}"/></label></li>
+                        <li><input type="radio" value="" name="pay" id="zg"/><label for="zg"><img src="{% static 'images/ico18.jpg' %}"/></label></li>
+                        <li><input type="radio" value="" name="pay" id="js"/><label for="js"><img src="{% static 'images/ico19.jpg' %}"/></label></li>
+                        <li><input type="radio" value="" name="pay" id="xy"/><label for="xy"><img src="{% static 'images/ico20.jpg' %}"/></label></li>
+                        <li><input type="radio" value="" name="pay" id="zs"/><label for="zs"><img src="{% static 'images/ico21.jpg' %}"/></label></li>
+                    </ul>
+                    <div class="clear"></div>
+                </div>
+            </dd>
+            <br>
+            <button class="layui-btn layui-btn-danger" id="fk">立即付款</button>
+        </dl>
+        <div class="clear"></div>
+    </div>
+</div>
+{% csrf_token %}
+<!--footer-->
+<div class="footer">
+	<div class="f_bz">
+    	<div class="w1200">
+            <dl class="dl01">
+                <dt>正品保证</dt>
+                <dd>正品护航  租赁无忧</dd>
+            </dl>
+            <dl class="dl02">
+                <dt>你消费 我买单</dt>
+                <dd>返现租赁平台</dd>
+            </dl>
+            <dl class="dl03">
+                <dt>品类丰富</dt>
+                <dd>品类齐全 轻松租赁</dd>
+            </dl>
+            <dl class="dl04">
+                <dt>特色服务体验</dt>
+                <dd>为您呈现不一样的服务</dd>
+            </dl>
+            <div class="clear"></div>
+        </div>
+    </div>
+</div>
+
+
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'layui/layui.js' %}"></script>
+<script type="text/javascript">
+$('#fk').click(function () {
+    $.ajax({
+            async: false, //async. 默认是 true，即为异步方式，$.ajax执行后，会继续执行ajax后面的脚本，直到服务器端返回数据后，触发$.ajax里的success方法，这时候执行的是两个线程。
+            //async 设置为 false，则所有的请求均为同步请求，在没有返回值之前，同步请求将锁住浏览器，用户其它操作必须等待请求完成才可以执行。
+            url: "",
+            type: 'post',
+            data: {
+                bz_id: {{ bz_id }},
+                title: '{{ bz_info.title }}',
+                fb_user: '{{ bz_info.fb_user }}',
+                money: {{ bz_info.money }},
+                hours: {{ hours }},
+                csrfmiddlewaretoken: $("[name='csrfmiddlewaretoken']").val(),
+            },
+            success: function (data) {
+                if (data.msg == 'ok') {
+                    alert('付款成功，您的账户余额还有'+ data.ye + '元。租用的账号和密码可在已付款订单中查看');
+                    window.location = {% url 'users:index' %};
+                } else {
+                    alert(data.msg);
+                }
+            },
+        })
+        return false;
+})
+
+</script>
+</body>
+</html>

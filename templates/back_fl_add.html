@@ -1,0 +1,60 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>编辑租赁信息</title>
+    <link rel="stylesheet" href="{% static '/layui/css/layui.css' %}">
+</head>
+<body>
+<form style="display: flex; flex-direction: column;" class="layui-form">
+    {% csrf_token %}
+    <div class="layui-form-item">
+
+        <label class="layui-form-label">分类名称</label>
+        <div class="layui-input-block">
+            <input type="text" id="name" lay-verify="name"
+                   autocomplete="off"
+                   placeholder="分类名称" class="layui-input" style="width: 300px">
+        </div>
+    </div>
+    <div style="text-align: center;margin-top: 30px">
+        <button id="tj" class="layui-btn layui-btn-normal" style="width: 100px">提交</button>
+    </div>
+</form>
+</body>
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'layui/layui.all.js' %}"></script>
+
+<script>
+
+    $('#tj').click(function () {
+        var name = $('#name').val()
+        $.ajax({
+            async: false, //async. 默认是 true，即为异步方式，$.ajax执行后，会继续执行ajax后面的脚本，直到服务器端返回数据后，触发$.ajax里的success方法，这时候执行的是两个线程。
+            //async 设置为 false，则所有的请求均为同步请求，在没有返回值之前，同步请求将锁住浏览器，用户其它操作必须等待请求完成才可以执行。
+            url: "{% url 'users:back_fl_add' %}",
+            type: 'post',
+            data: {
+                name: name,
+                csrfmiddlewaretoken: $("[name='csrfmiddlewaretoken']").val(),
+            },
+            success: function (data) {
+                if (data.msg == 'ok') {
+                    alert('提交成功');
+                    var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                    parent.layer.close(index);
+                    parent.location.reload();
+                } else {
+                    alert(data.msg);
+                }
+            },
+        })
+
+
+        return false;
+
+    })
+
+</script>
+</html>

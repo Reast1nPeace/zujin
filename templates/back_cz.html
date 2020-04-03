@@ -1,0 +1,94 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="{% static '/layui/css/layui.css' %}" media="all">
+    <link rel="stylesheet" href="{% static 'layuiadmin/style/admin.css' %}" media="all">
+    <title>充值管理</title>
+</head>
+<body>
+<div class="layui-fluid">  <!--使用此类不会固定宽度，而是 100%自适应-->
+    <div class="layui-card">
+        <div class="layui-card-header">
+
+            充值管理
+        </div>
+        <div class="layui-card-body" pad15>
+            <table class="layui-table" lay-filter="cjlist" id="tbd" border="1">
+            </table>
+            <script type="text/html" id="operation">
+                <button class="layui-btn layui-btn-xs layui-btn-danger" lay-event="edit">确认充值</button>
+            </script>
+        </div>
+
+    </div>
+</div>
+
+{% csrf_token %}
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'layui/layui.js' %}"></script>
+<script>
+    layui.use('table', function () {
+        var table = layui.table;
+        //方法式 渲染表格
+        ins1 = table.render({
+            elem: '#tbd',
+            cols: [[ //标题栏
+                {field: 'id', title: 'ID', width: 80, sort: true, fixed: true, align: 'center'}
+                 , {field: 'username', title: '充值账户', width: 419, sort: true, align: 'center'}
+                , {field: 'money', title: '充值金额', width: 419, sort: true, align: 'center'}
+                , {fixed: 'right', title: '操作', width: 162, align: 'center', toolbar: '#operation'}
+            ]],
+            {#maxwidth: 1132,#}
+            {#height: 389,#}
+            height: 'full-200',  //高度最大适应
+            url: '/back_cz/',
+            {#where: {keyword: '{{ keyword }}'},  //如果无需传递额外参数，可不加该参数#}
+            page: true,
+            id: 'cjid'
+        });
+
+        //监听表格复选框选择
+        table.on('checkbox(cjlist)', function (obj) {
+            console.log(obj)
+        });
+        //监听工具条
+        table.on('tool(cjlist)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'edit') {
+                $.ajax({
+                    async: false, //async. 默认是 true，即为异步方式，$.ajax执行后，会继续执行ajax后面的脚本，直到服务器端返回数据后，触发$.ajax里的success方法，这时候执行的是两个线程。
+                    //async 设置为 false，则所有的请求均为同步请求，在没有返回值之前，同步请求将锁住浏览器，用户其它操作必须等待请求完成才可以执行。
+                    url: "",
+                    type: 'post',
+                    data: {
+                        cz_id: data.id,
+                        csrfmiddlewaretoken: $("[name='csrfmiddlewaretoken']").val(),
+                    },
+                    success: function (data) {
+                        if (data.msg == 'ok') {
+                            alert('充值成功');
+                            window.location.reload();
+                        }
+                    },
+                })
+                return false;
+            }
+        });
+
+
+        $('.demoTable .layui-btn').on('click', function () {
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+
+    });
+
+</script>
+</body>
+</html>

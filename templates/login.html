@@ -1,0 +1,104 @@
+﻿{% load staticfiles %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>登陆</title>
+    <link href="{% static 'css/style.css' %}" type="text/css" rel="stylesheet"/>
+</head>
+<body class="member">
+
+<div class="w1185">
+    <div class="font-d"><a href="{% url 'users:index' %}" style="color: #e83426;font-size: 40px">{{ pt_order_obj.pt_name }}</a></div>
+    <div class="search">
+        	<form action="{% url 'users:bz_list' %}" class="form">
+        		<input type="text" placeholder="输入本站租赁标题关键字" id="keyword" name="keyword" class="txt"/>
+                <input type="submit" value="搜索" class="sub"/>
+            </form>
+        </div>
+    <div class="s_r">
+        	<dl>
+                <dd style="font-size: 16px">客服电话：<b style="color: #ea3c1f">{{ pt_order_obj.phone }}</b></dd>
+            </dl>
+        </div>
+    <div class="clear"></div>
+</div>
+
+<div class="m_bg">
+    <div class="w1185">
+        <form class="form">
+            {% csrf_token %}
+            <p class="p01"><span>登录</span><a href="{% url 'users:user_register' %}">注册</a></p>
+            <p class="p02"><input type="text" name="username" id="username" class="txt"
+                                  value="{{ username|default:'' }}" placeholder="账户名"></p>
+            <p class="p03"><input type="password" name="password" id="password" class="txt"
+                                  value="{{ password|default:'' }}" placeholder="密码"/></p>
+            <div class="error btns login-form-tips" id="jsLoginTips">
+        
+                    </div>
+            <p class="p03" style="text-align: center;font-size: 15px"><input id="is_gly" name="id_gly" type="checkbox"/>管理员</p>
+            <p class="p05">
+                <button id="jsLoginBtn" class="sub">立即登录</button>
+            </p>
+
+        </form>
+    </div>
+</div>
+
+
+<script type="text/javascript" src="{% static 'js/jquery.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'layui/layui.all.js' %}"></script>
+<script type="text/javascript">
+    $('#jsLoginBtn').click(function () {
+        $('#jsLoginTips').html('');
+        var username = $('#username').val();
+        var password = $('#password').val();
+        var is_gly = $("input[type='checkbox']").is(':checked');
+        if (username == '') {
+            layer.tips('用户名不能为空', '#username', {
+                tips: 2  //向右
+            });
+        }
+        else if (password == '') {
+            layer.tips('密码必须填写', '#password', {
+                tips: 2  //向右
+            });
+        } else if (!password.match(/^[\S]{6,12}$/)) {
+            layer.tips('密码必须6到12位，且不能出现空格', '#password', {
+                tips: 2  //向右
+            });
+        }
+        else {
+           // var encrypt = new JSEncrypt();
+          //  var password = encrypt.encrypt(password);  //加密密码
+            $.ajax({
+                url: "{% url 'users:user_login' %}",
+                type: 'post',
+                data: {
+                    is_gly: is_gly,
+                    username: username,
+                    password: password,
+                    csrfmiddlewaretoken: $("[name='csrfmiddlewaretoken']").val(),
+                },
+                success: function (data) {
+                    if (data.status == 'ok') {
+                        if (is_gly == false) {
+                            window.location.href = "{% url 'users:index' %}";
+                        }else if (is_gly == true) {
+                            window.location.href = "{% url 'users:back_index' %}";
+                        }
+
+                    } else if (data.status == 'error') {
+                        $('#jsLoginTips').append(data.msg);
+
+                    }
+                }
+            })
+        }
+
+        return false;
+    })
+</script>
+</body>
+</html>

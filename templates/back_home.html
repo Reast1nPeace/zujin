@@ -1,0 +1,117 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>文思海辉知识库系统控制台主页</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="{% static '/layui/css/layui.css' %}" media="all">
+    <link rel="stylesheet" href="{% static 'layuiadmin/style/admin.css' %}" media="all">
+</head>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md8">
+            <div class="layui-row layui-col-space15">
+                <div class="layui-col-md6">
+                    <div class="layui-card">
+                        <div class="layui-card-header">本站租赁信息</div>
+                        <div class="layui-card-body">
+
+                            <div class="layui-carousel layadmin-carousel layadmin-backlog">
+                                <div carousel-item>
+                                    <ul class="layui-row layui-col-space10">
+                                        <li class="layui-col-xs12">
+                                            <a lay-href="{% url 'users:back_bz_yfb' %}" class="layadmin-backlog-body">
+                                                <h3 style="color: black">已发布租赁</h3>
+                                                <p><cite>{{ bz_yfb_count }}</cite></p>
+                                            </a>
+                                        </li>
+                                        <li class="layui-col-xs12">
+                                            <a lay-href="{% url 'users:sh' %}" class="layadmin-backlog-body">
+                                                <h3 style="color: black">未发布租赁</h3>
+                                                <p><cite>{{ bz_wfb_count }}</cite></p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-md6">
+                    <div class="layui-card">
+                        <div class="layui-card-header">外站租赁信息</div>
+                        <div class="layui-card-body">
+
+                            <div class="layui-carousel layadmin-carousel layadmin-backlog">
+                                <div carousel-item>
+                                    <ul class="layui-row layui-col-space10">
+                                        <li class="layui-col-xs12">
+                                            <a lay-href="{% url 'users:back_wz' %}" class="layadmin-backlog-body">
+                                                <h3 style="color: black">已发布租赁</h3>
+                                                <p><cite>{{ wz_count }}</cite></p>
+                                            </a>
+                                        </li>
+
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-md12">
+                    <div class="layui-card">
+                        <div class="layui-card-header">本站账户信息</div>
+                        <div class="layui-card-body">
+
+                            <div class="layui-carousel layadmin-carousel layadmin-backlog">
+                                <div carousel-item>
+                                    <ul class="layui-row layui-col-space10">
+                                        <li class="layui-col-xs12">
+                                            <a lay-href="{% url 'users:gl_user' %}" class="layadmin-backlog-body">
+                                                <h3 style="color: black">账户数</h3>
+                                                <p><cite>{{ user_count }}</cite></p>
+                                            </a>
+                                        </li>
+
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="layui-col-md4">
+            <div class="layui-card">
+                <div class="layui-card-header">公告</div>
+                <div class="layui-card-body layui-text">
+                    {{ pt_order_obj.gg }}
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+</div>
+{% csrf_token %}
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'layui/layui.js' %}"></script>
+<script>
+    layui.config({
+        base: "{% static 'layuiadmin/' %}" //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+    }).use(['index', 'console']);
+
+</script>
+</body>
+</html>
+

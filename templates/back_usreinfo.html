@@ -1,0 +1,88 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>设置我的资料</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="{% static '/layui/css/layui.css' %}" media="all">
+    <link rel="stylesheet" href="{% static 'layuiadmin/style/admin.css' %}" media="all">
+</head>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">设置我的资料</div>
+                <div class="layui-card-body" pad15>
+
+                    <div class="layui-form" lay-filter="">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">账户名</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="nickname" id="username" value="{{ user.username }}" lay-verify="nickname"
+                                       autocomplete="off" placeholder="请输入账户名" class="layui-input">
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">邮箱</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="email" id="email" value="{{ user.email }}" lay-verify="email"
+                                       autocomplete="off" placeholder="请输入邮箱" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button class="layui-btn" id="tj">确认修改</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% csrf_token %}
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'layui/layui.all.js' %}"></script>
+<script>
+    $('#tj').click(function () {
+        var username = $('#username').val();
+        var email = $('#email').val();
+        $.ajax({
+            async: false, //同步请求，true为异步请求，默认为true
+            url: "{% url 'users:userinfo' %}",
+            type: 'post',
+            data: {
+                username: username,
+                email: email,
+                csrfmiddlewaretoken: $("[name='csrfmiddlewaretoken']").val(),
+            },
+            success: function (data) {
+                if (data.status == 'ok') {
+                    layer.alert(data.msg);
+
+
+                } else if (data.status == 'null') {
+                    layer.alert(data.msg);
+                }else {
+                    layer.tips(data.msg, '#'+data.status,{
+                        tips: 1  //向上
+                    });
+                }
+
+            }
+        })
+
+
+    })
+</script>
+</body>
+</html>

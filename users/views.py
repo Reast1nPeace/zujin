@@ -1,6 +1,7 @@
 from django.shortcuts import render,redirect,reverse,HttpResponse
 from .forms import UserRegisterForm,UserLoginForm
 from .models import UserProfile,UserMessage,ZuHao,ZuHaoWan,OrderInfo,DingDanInfo,ChongZhiInfo,FenLeiInfo
+from .utils import recommend
 from django.db.models import Q
 from tools.decorators import login_decorator
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
@@ -8,22 +9,25 @@ from django.contrib.auth import authenticate,logout,login
 from django.http import JsonResponse
 from datetime import datetime
 from django.views.generic import View
+from django.core.mail import send_mail
 # Create your views here.
 from django.views.decorators.cache import cache_page
 from random import randrange
+
 
 # Create your views here.
 
 #生成邀请码的函数
 def get_random_code(code_length):
     code_source = '2134567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM'
-    code = ''
-    for i in range(code_length):
-        #随机选择一个字符
-        str = code_source[randrange(0,len(code_source))]
-        code += str
-        # code += choice(code_source)
-    return code
+    for i in range(1000):
+        code = ''
+        for i in range(code_length):
+            str = code_source[randrange(0,len(code_source))]
+            code += str
+            # code += choice(code_source)
+        if len(UserProfile.objects.filter(bryqm=code)) == 0:
+            return code
 
 def user_register(request):
     # 注册
@@ -76,7 +80,6 @@ def user_register(request):
             password = request.POST.get('password')
             return render(request, 'register.html', locals())
 
-
 class UserLoginView(View):
     # 登录
     def get(self, request):
@@ -107,19 +110,23 @@ class UserLoginView(View):
             ret['msg'] = '账户名或者密码错误'
             return JsonResponse(ret)
 
-
 def user_logout(request):
     # 退出登录
     logout(request)
     return redirect(reverse('users:user_login'))
 
-
 def index(request):
+    if request.user.username == "":
+        zuhao_list = ZuHao.objects.filter(fb_status=True,yz_status=False).order_by('-add_time')[0:8]
+    else:
+        pass
+        #zuhao_list = get_user_recommand(request.user.username)
+        zuhao_list = recommend(request.user.username)
     # 首页
     a = 'index'
     pt_order_obj = OrderInfo.objects.all().first()
     zuhao_fl_list = FenLeiInfo.objects.all()
-    zuhao_list = ZuHao.objects.filter(fb_status=True,yz_status=False).order_by('-add_time')[0:8]
+    
     zuhaowan_list = ZuHaoWan.objects.all()[0:8]
     return render(request, 'index.html', locals())
 
@@ -256,6 +263,16 @@ def bz_look(request):
             UserMessage.objects.create(message_user=request.user.username,
                                        message_content='您租用了'+fb_user+'的[' + title + ']'+ str(hours) +'个小时，账户余额为：' + str(user_obj.money) + '元')
             user_obj1 = UserProfile.objects.filter(username=fb_user).first()
+            #发邮件
+            user_obj1_email = user_obj1.email
+            send_mail(
+                '账号租赁平台',
+                '%s在%s租用了您的账号%s,共%s个小时，租赁结束请即使修改密码！' % (request.user.username,str(now_time),title,str(hours)),
+                '1035743330@qq.com',
+                [user_obj1_email],
+                fail_silently=False,
+            )
+
             new_money = user_obj1.money + round(money * hours, 2)
             user_obj1.money = new_money
             user_obj1.save()
@@ -269,6 +286,8 @@ def bz_look(request):
             DingDanInfo.objects.create(zyr=request.user.username,fb_user=fb_user,title=bz_info.title,
                                        game_name=bz_info.game_name,area=bz_info.area,server=bz_info.server,
                                        money=bz_info.money,zh=bz_info.zh,pwd=bz_info.pwd,hours=hours,zy_time=now_time)
+            
+
         else:
             ret['msg'] = '付款失败，账户余额不足'
         return JsonResponse(ret)
@@ -299,7 +318,7 @@ def yfkdd_list(request):
     if limit != '':
         yfkdd_list = DingDanInfo.objects.filter(zyr=request.user.username)
         yfkdd_list = yfkdd_list.values('title', 'game_name', 'area', 'server',
-                                                                 'money','zyr','fb_user','zh','pwd','hours','zy_time').order_by('-add_time')
+                                        'money','zyr','fb_user','zh','pwd','hours','zy_time').order_by('-add_time')
         # 分页功能
         page = request.GET.get('page', '')
         pa = Paginator(yfkdd_list, limit)

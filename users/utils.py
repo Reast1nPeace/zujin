@@ -56,9 +56,12 @@ def recommend(user):
     res = []
     if DingDanInfo.objects.filter(zyr=user).count():
         data = get_data(user)
+        print(data)
         top_user = top_similiar(user, data)[0][0]
         # 购买记录
         items = data[top_user]
+        print("topuser:",top_user)
+        print(items)
         # 推荐列表
         for item in items.keys():
             if item not in data[user].keys():
@@ -66,14 +69,14 @@ def recommend(user):
         # 多个商品按照评分排序
         recommend_list.sort(key=lambda val: val[1], reverse=True)
         last_dindan_game_name = DingDanInfo.objects.filter(zyr=user).order_by("-add_time").first().game_name
-        res = list(ZuHao.objects.filter(fb_status=True, yz_status=False, game_name=last_dindan_game_name).order_by('-add_time')[:3])
-
+        res = list(ZuHao.objects.filter(fb_status=True, yz_status=False, game_name=last_dindan_game_name).order_by('-add_time')[:1])
+        print(recommend_list)
     if len(recommend_list) == 0:
         res = ZuHao.objects.filter(fb_status=True, yz_status=False).order_by('-add_time')[:8]
     else:
         for item in recommend_list:
             res.extend(ZuHao.objects.filter(fb_status=True, yz_status=False, game_name=item[0]).order_by('-add_time')[:2])
-            res.extend(ZuHao.objects.filter(fb_status=True, yz_status=False).order_by('-add_time')[:8])
+        res.extend(ZuHao.objects.filter(fb_status=True, yz_status=False).order_by('-add_time')[:8])
     return res[:8]
 
 

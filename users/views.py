@@ -265,13 +265,16 @@ def bz_look(request):
             user_obj1 = UserProfile.objects.filter(username=fb_user).first()
             #发邮件
             user_obj1_email = user_obj1.email
-            send_mail(
-                '账号租赁平台',
-                '%s在%s租用了您的账号%s,共%s个小时，租赁结束请即使修改密码！' % (request.user.username,str(now_time),title,str(hours)),
-                '1035743330@qq.com',
-                [user_obj1_email],
-                fail_silently=False,
-            )
+            try:
+                send_mail(
+                    '账号租赁平台',
+                    '%s在%s租用了您的账号%s,共%s个小时，租赁结束请即使修改密码！' % (request.user.username,str(now_time),title,str(hours)),
+                    '1035743330@qq.com',
+                    [user_obj1_email],
+                    fail_silently=False,
+                )
+            except:
+                pass
 
             new_money = user_obj1.money + round(money * hours, 2)
             user_obj1.money = new_money
